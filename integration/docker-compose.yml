@@ -1,0 +1,64 @@
+version: "3.7"
+
+services:
+  connect:
+    image: quickstart-connect-1.6.1:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile-MongoConnect
+    hostname: connect
+    container_name: connect
+    ports:
+      - 8083:8083
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "128.199.105.69:9091"
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: connect-cluster-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_ZOOKEEPER_CONNECT: "128.199.105.69:2181"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_AUTO_CREATE_TOPICS_ENABLE: "true"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+  mongo1:
+    image: "quickstart-mongod:1.0"
+    container_name: mongo1
+    ports:
+      - 27017:27017
+    build:
+      context: .
+      dockerfile: Dockerfile-Mongo
+    command: --replSet rs0
+    restart: always
+
+  mongo1-setup:
+    image: "quickstart-mongod:1.0"
+    container_name: mongo1-setup
+    depends_on:
+      - mongo1
+    entrypoint:
+      [
+        "bash",
+        "-c",
+        "sleep 10 && mongo --host mongodb://mongo1:27017 config-replica.js && sleep 10 && mongo --host mongodb://mongo1:27017 config-data.js",
+      ]
+    restart: "no"
+
+  shell:
+    image: "quickstart-shell:1.0"
+    container_name: shell
+    build:
+      context: .
+      dockerfile: Dockerfile-shell
+    depends_on:
+      - connect
+      - mongo1
+    command: "tail -f /dev/null"

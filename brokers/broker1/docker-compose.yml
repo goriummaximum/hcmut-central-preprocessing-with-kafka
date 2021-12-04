@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  zookeeper1:
+    image: wurstmeister/zookeeper:latest
+    hostname: zk1
+    container_name: zk1
+    extra_hosts:
+      - "zk2:128.199.105.69"
+      - "zk3:128.199.105.69"
+    ports:
+      - "2181:2181"
+
+    environment:
+      zk_id: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+  
+  kafka1:
+    image: wurstmeister/kafka
+    container_name: kafka1
+    ports:
+      - "9091:9091"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_HOST_NAME: 128.199.105.69
+      KAFKA_ADVERTISED_PORT: 9091
+      KAFKA_LISTENERS: PLAINTEXT://:9091
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://128.199.105.69:9091
+      KAFKA_ZOOKEEPER_CONNECT: 128.199.105.69:2181, 128.199.105.69:2182, 128.199.105.69:2183
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
