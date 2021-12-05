@@ -1,7 +1,6 @@
 package com.nguyenthienan.phantom.producer;
 
 import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +9,6 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Producer {
@@ -27,9 +24,8 @@ public class Producer {
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
-        // create the producer
+        // create the producers
         KafkaProducer<String, String>[] producer = new KafkaProducer[20];
-
 
         Timer []time = new Timer[20];
         for (int i = 0; i < 20; i++) {
@@ -39,31 +35,9 @@ public class Producer {
                 time[i].schedule(new Publish("raw-temperature", String.valueOf(i), producer[i]), 0, TimeUnit.SECONDS.toMillis(1));
             } else {
                 time[i] = new Timer();
-                time[i].schedule(new Publish("raw-humidity", String.valueOf(i-10), producer[i]), 0, TimeUnit.SECONDS.toMillis(1));
+                time[i].schedule(new Publish("raw-humidity", String.valueOf(i - 10), producer[i]), 0, TimeUnit.SECONDS.toMillis(1));
             }
-
         }
-
-
-//        final ScheduledExecutorService []executorService = (new Executors).newSingleThreadScheduledExecutor()[10];
-//        executorService[0].scheduleAtFixedRate(() -> publish("raw-temperature", "0") , 0, 1, TimeUnit.SECONDS);
-//
-//        final ScheduledExecutorService executorService1 = Executors.newSingleThreadScheduledExecutor();
-//        executorService1.scheduleAtFixedRate(() -> publish("raw-temperature", "1") , 0, 1, TimeUnit.SECONDS);
-
-//        for (int i = 0; i < 10; i++) {
-//            // create a producer record
-//            String topic = "first_topic";
-//            String value = "hello world" + Integer.toString(i);
-//            String key = "Key " + Integer.toString(i);
-//
-//            ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, value);
-//
-//            logger.info("Key: " + key); // log the key
-//
-//        }
-//
-//
     }
 }
 
@@ -79,7 +53,6 @@ class Publish extends TimerTask {
 
     public void run() {
         try {
-            System.out.println(topic + id);
             String topic_name = topic.split("-")[1];
             String value = "";
             double rnd = Math.random();
