@@ -64,8 +64,9 @@ class Publish extends TimerTask {
                 value = String.valueOf(20 + Math.random() * 60);
             }
 
-            ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, "\""+ topic_name + "_" + id + "\" : \"" + value + "\"");
+            ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, topic_name, value);
             producer.send(record);
+            producer.flush();
         } catch (Exception ex) {
             System.out.println("error running thread " + ex.getMessage());
         }
