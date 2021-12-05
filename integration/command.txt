@@ -5,18 +5,20 @@ curl -X GET http://connect:8083/connectors : show existed connectors
 curl http://connect:8083/connectors/<connector_name>/status: check status
 
 create connector to mongodb:
+
+===raw-temperature===
 curl -X POST \
      -H "Content-Type: application/json" \
      --data '
 	{
-	  "name": "mongo-sink-1",
+	  "name": "mongo-sink-raw-temperature",
 	  "config": {
 	    "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
 	    "connection.uri": "mongodb://mongo1:27017/?replicaSet=rs0",
 	    "tasks.max": "1",
-	    "database": "quickstart",
-	    "collection": "demo",
-	    "topics": "demo",
+	    "database": "datacache",
+	    "collection": "raw-temperature",
+	    "topics": "raw-temperature",
 	    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
 	    "value.converter.schemas.enable": "false",
 	    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
@@ -27,6 +29,76 @@ curl -X POST \
      ' \
      http://connect:8083/connectors -w "\n"
      
+===raw-humidity===
+curl -X POST \
+     -H "Content-Type: application/json" \
+     --data '
+	{
+	  "name": "mongo-sink-raw-humidity",
+	  "config": {
+	    "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+	    "connection.uri": "mongodb://mongo1:27017/?replicaSet=rs0",
+	    "tasks.max": "1",
+	    "database": "datacache",
+	    "collection": "raw-humidity",
+	    "topics": "raw-humidity",
+	    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+	    "value.converter.schemas.enable": "false",
+	    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+	    "key.converter.schemas.enable": "false",
+	    "errors.tolerance": "all"
+	  }
+	}
+     ' \
+     http://connect:8083/connectors -w "\n"
+
+===preprocessed-thermal===
+curl -X POST \
+     -H "Content-Type: application/json" \
+     --data '
+	{
+	  "name": "mongo-sink-preprocessed-thermal",
+	  "config": {
+	    "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+	    "connection.uri": "mongodb://mongo1:27017/?replicaSet=rs0",
+	    "tasks.max": "1",
+	    "database": "datacache",
+	    "collection": "preprocessed-thermal",
+	    "topics": "preprocessed-thermal",
+	    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+	    "value.converter.schemas.enable": "false",
+	    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+	    "key.converter.schemas.enable": "false",
+	    "errors.tolerance": "all"
+	  }
+	}
+     ' \
+     http://connect:8083/connectors -w "\n"
+     
+===preprocessed-humidity===
+curl -X POST \
+     -H "Content-Type: application/json" \
+     --data '
+	{
+	  "name": "mongo-sink-preprocessed-humidity",
+	  "config": {
+	    "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+	    "connection.uri": "mongodb://mongo1:27017/?replicaSet=rs0",
+	    "tasks.max": "1",
+	    "database": "datacache",
+	    "collection": "preprocessed-humidity",
+	    "topics": "preprocessed-humidity",
+	    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+	    "value.converter.schemas.enable": "false",
+	    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+	    "key.converter.schemas.enable": "false",
+	    "errors.tolerance": "all"
+	  }
+	}
+     ' \
+     http://connect:8083/connectors -w "\n"
      
 mongosh mongodb://mongo1:27017/?replicaSet=rs0: connect to mongodb
+
+db.getCollection("raw-temperature").find({}): get collection raw-temperature and select all
   

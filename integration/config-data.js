@@ -1,3 +1,3 @@
-db = db.getSiblingDB("quickstart");
+db = db.getSiblingDB("datacache");
 db.createCollection("source");
 db.createCollection("sink");
