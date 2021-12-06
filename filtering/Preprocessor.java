@@ -17,7 +17,6 @@ public class Preprocessor {
         Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "preprocessor");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "128.199.105.69:9091");
-//        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
@@ -31,6 +30,7 @@ public class Preprocessor {
             valid_sensor_names.add("temperature_" + Integer.toString(i));
             valid_sensor_names.add("humidity_" + Integer.toString(i));
         }
+        //input.to("preprocessed-temperature");
 
         // Filter erroneous records
         KStream<String,String> valid_records = input
@@ -59,6 +59,7 @@ public class Preprocessor {
                     Timestamp now = new Timestamp(System.currentTimeMillis());
                     return (now.getTime() - start.getTime()) % 3000 < 1000 || !is_sample;
                 });
+        //sample_records.to("preprocessed-temperature");
 
         Map<String, KStream<String, String>> branch = sample_records.split()
                 // Temperature within (10,60) is in a safe temperature range
