@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Preprocessor {
     public static String generate_data(String type, String value, String status) {
-        return "{\"" + type + "\":" + value + ",\"status\":" + status + "}";
+        return "{\"" + type + "\":" + value + ",\"status\":\"" + status + "\"}";
     }
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.nguyenthienan.phantom.producer;
+//package com.nguyenthienan.phantom.producer;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class Producer {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        String boostrapServers = "127.0.0.1:9092";
+        String boostrapServers = "128.199.105.69:9092";
 
         Logger logger = LoggerFactory.getLogger(Producer.class);
 
@@ -64,7 +65,8 @@ class Publish extends TimerTask {
                 value = String.valueOf(20 + Math.random() * 60);
             }
 
-            ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, topic_name, value);
+            Random r = new Random();
+            ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, topic_name + "_" + String.valueOf(r.nextInt(10)), value);
             producer.send(record);
             producer.flush();
         } catch (Exception ex) {
