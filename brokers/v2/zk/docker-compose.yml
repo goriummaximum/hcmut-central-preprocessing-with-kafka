@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  zookeeper1:
+    image: wurstmeister/zookeeper:latest
+    hostname: zk1
+    container_name: zk1
+    ports:
+      - "2181:2181"
+
+    environment:
+      zk_id: 1
+      ZOOKEEPER_CLIENT_PORT: 2181

@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  kafka3:
+    image: wurstmeister/kafka
+    container_name: kafka3
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ADVERTISED_HOST_NAME: 128.199.105.69
+      KAFKA_ADVERTISED_PORT: 9093
+      KAFKA_LISTENERS: PLAINTEXT://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://128.199.105.69:9093
+      KAFKA_ZOOKEEPER_CONNECT: 128.199.105.69:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
