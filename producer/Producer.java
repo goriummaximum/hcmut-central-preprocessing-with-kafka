@@ -1,4 +1,4 @@
-//package com.nguyenthienan.phantom.producer;
+package com.nguyenthienan.phantom.producer;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -15,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Producer {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        String boostrapServers = "128.199.105.69:9092";
+        String boostrapServers = "128.199.105.69:9093";
 
         Logger logger = LoggerFactory.getLogger(Producer.class);
 
@@ -31,12 +30,14 @@ public class Producer {
         Timer []time = new Timer[20];
         for (int i = 0; i < 20; i++) {
             producer[i] = new KafkaProducer<String, String>(properties);
+            long random_start_time = (long) (Math.random()*10);
+            System.out.println(random_start_time);
             if (i < 10) {
                 time[i] = new Timer();
-                time[i].schedule(new Publish("raw-temperature", String.valueOf(i), producer[i]), 0, TimeUnit.SECONDS.toMillis(1));
+                time[i].schedule(new Publish("raw-temperature", String.valueOf(i), producer[i]), random_start_time, TimeUnit.SECONDS.toMillis(1));
             } else {
                 time[i] = new Timer();
-                time[i].schedule(new Publish("raw-humidity", String.valueOf(i - 10), producer[i]), 0, TimeUnit.SECONDS.toMillis(1));
+                time[i].schedule(new Publish("raw-humidity", String.valueOf(i - 10), producer[i]), random_start_time, TimeUnit.SECONDS.toMillis(1));
             }
         }
     }
@@ -54,7 +55,7 @@ class Publish extends TimerTask {
 
     public void run() {
         try {
-            String topic_name = topic.split("-")[1];
+            String topic_name = topic.trim().split("-")[1];
             String value = "";
             double rnd = Math.random();
             if (rnd > 0.8) {
@@ -65,8 +66,7 @@ class Publish extends TimerTask {
                 value = String.valueOf(20 + Math.random() * 60);
             }
 
-            Random r = new Random();
-            ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, topic_name + "_" + String.valueOf(r.nextInt(10)), value);
+            ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, topic_name + "_" + id, value);
             producer.send(record);
             producer.flush();
         } catch (Exception ex) {
